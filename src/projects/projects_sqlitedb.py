@@ -68,11 +68,11 @@ WHERE id=?""", (str(project_id))
     def list_projects(self) -> List[Project]:
         self._cursor.execute(
             """SELECT * FROM Projects""")
-        project = self._cursor.fetchall()
-        return project
+        projects = self._cursor.fetchall()
+        return projects
 
     def count(self):
-        pass
+        return len(self.list_projects())
 
     def update(self, project_id, project):
         pass

@@ -26,6 +26,13 @@ def has_unique_ids(list_projects) -> bool:
 
     return True
 
+def test_count_returns_valid_num(db_with_3_projects):
+    assert isinstance(projects.count(), int)
+
+def test_count_returns_correct_count(db_with_3_projects):
+    added_projects = db_with_3_projects
+    assert projects.count() == len(added_projects)
+
 
 def equivalent(p1, p2) -> bool:
     p1_d = p2._asdict()

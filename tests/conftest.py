@@ -5,10 +5,12 @@ from projects import Project
 
 
 @pytest.fixture(autouse=True)
-def initialized_database(tmpdir_factory):
-    projects.start_database(str(tmpdir_factory.getbasetemp()))
+def initialized_database(tmpdir):
+    projects.start_database(str(tmpdir))
 
     yield
+
+    projects.stop_database()
 
 @pytest.fixture()
 def setup_few_projects():
@@ -22,3 +24,4 @@ def setup_few_projects():
 def db_with_3_projects(setup_few_projects):
     for prj in setup_few_projects:
         projects.add(prj)
+    return setup_few_projects
