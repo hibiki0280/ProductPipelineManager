@@ -83,12 +83,8 @@ def update(project_id: int, project: Project) -> None:
         raise TypeError('project must be an Project Object')
     check_database_status()
 
-    current_project = _projectsdb.get(project_id)
     updates = project._asdict()
-    for field in project._fields:
-        if field != "id" and updates[field] is not None:
-            current_project[field] = updates[field]
-    _projectsdb.update(project_id, current_project)
+    _projectsdb.update(project_id, updates)
 
 def delete(project_id: int) -> None:
     if not isinstance(project_id, int):

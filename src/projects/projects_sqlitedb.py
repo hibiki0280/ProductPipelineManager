@@ -75,7 +75,14 @@ WHERE id=?""", (str(project_id))
         return len(self.list_projects())
 
     def update(self, project_id, project):
-        pass
+        project.pop("id")
+        execute_message = """UPDATE Projects set 
+%s where id=?""" % ", ".join(["%s=?" % key for key in project.keys()])
+        params = list(project.values())
+        params.append(project_id)
+        self._cursor.execute(execute_message, params) 
+        self._conn.commit()
+        
 
     def delete(self, project_id):
         pass
@@ -86,8 +93,8 @@ WHERE id=?""", (str(project_id))
     def unique_id(self):
         pass
 
-    def stop_database(self):
-        pass
+    def stop_database(self) -> None:
+        self._conn.close()
     
 def start_database(db_path):
     return ProjectsDB(db_path)
