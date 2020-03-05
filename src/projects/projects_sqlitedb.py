@@ -85,10 +85,12 @@ WHERE id=?""", (str(project_id))
         
 
     def delete(self, project_id):
-        pass
+        self._cursor.execute("DELETE FROM Projects where id=?", [project_id])
+        self._conn.commit()
 
     def delete_all(self):
-        pass
+        self._cursor.execute("DELETE FROM Projects")
+        self._conn.commit()
 
     def unique_id(self):
         pass
