@@ -12,25 +12,4 @@ def test_update(project, project_updated):
     project_id = projects.add(project)
     projects.update(project_id, project_updated)
     project_resistered = projects.get(project_id)
-    assert equivalent(project_updated, project_resistered)
-
-
-def is_element(p1,list_projects) -> bool:
-    for p2 in list_projects:
-        if equivalent(p1,p2):
-            return True
-    else:
-        return False
-        
-def equivalent(p1, p2):
-    p1_d = p2._asdict()
-    p2_d = p2._asdict()
-
-    for field in p1._fields:
-        if field != "id":
-            if p1_d[field] != p2_d[field]:
-                return False
-            else:
-                continue
-
-    return True
+    assert Project.equivalent(project_updated, project_resistered)

@@ -30,6 +30,6 @@ def test_add(project):
     project_id = projects.add(project)
     project_resistered = projects.get(project_id)
     print("project_id= ", project_id)
-    assert equivalent(project, project_resistered)
+    assert Project.equivalent(project, project_resistered)
 
 

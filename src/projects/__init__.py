@@ -8,7 +8,7 @@ from .api import (
     update,
     delete,
     delete_all,
-    unique_id,
+    # unique_id,
     start_database,
     stop_database
 )

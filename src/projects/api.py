@@ -22,8 +22,10 @@ class Project(object):
             raise ValueError('project.author must be string or None')
         
         self.name = Field(name)
-        self.description = Field(description)
-        self.author = Field(author)
+        if description:
+            self.description = Field(description)
+        if author:
+            self.author = Field(author)
         self.id = Field(id)
 
         self._fields = self._asdict().keys()
@@ -36,8 +38,27 @@ class Project(object):
         for item in self._asdict().items():
             repr += "    %s: %s\r\n" % item
         return repr
-    # def get_id(self):
-    #     return self.id.value()
+
+    @staticmethod
+    def equivalent(p1, p2) -> bool:
+        p1_d = p2._asdict()
+        p2_d = p2._asdict()
+
+        for field in p1._fields:
+            if field != "id":
+                if p1_d[field] != p2_d[field]:
+                    return False
+                else:
+                    continue
+        else:
+            return True
+    @staticmethod
+    def is_element(p1,list_projects) -> bool:
+        for p2 in list_projects:
+            if equivalent(p1,p2):
+                return True
+        else:
+            return False
 
     
 
@@ -96,8 +117,8 @@ def delete_all() -> None:
     check_database_status()
     _projectsdb.delete_all()
 
-def unique_id() -> int:
-    pass
+# def unique_id() -> int:
+#     pass
 
 _projectsdb = None
 

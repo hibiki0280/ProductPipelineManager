@@ -92,8 +92,8 @@ WHERE id=?""", (str(project_id))
         self._cursor.execute("DELETE FROM Projects")
         self._conn.commit()
 
-    def unique_id(self):
-        pass
+    # def unique_id(self):
+    #     pass
 
     def stop_database(self) -> None:
         self._conn.close()
