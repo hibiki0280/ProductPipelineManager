@@ -31,7 +31,7 @@ class Project(object):
     def _asdict(self):
         return {field_name: field.value() for field_name, field in self.__dict__.items() if isinstance(field, Field) }
 
-    def __repr__(self):
+    def __str__(self):
         repr = "Project Object:\r\n"
         for item in self._asdict().items():
             repr += "    %s: %s\r\n" % item

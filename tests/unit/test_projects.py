@@ -9,3 +9,5 @@ def test_asdict():
         "id": 12
     }
     assert dict == expected
+
+    
