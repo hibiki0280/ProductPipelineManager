@@ -3,7 +3,7 @@ import sqlite3
 from six import string_types
 from typing import List
 
-from projects import Project
+from projects import ProjectEntity
 
 
 def dict_factory(cursor, row):
@@ -57,7 +57,7 @@ WHERE name=?""", [project["name"]]
         self._cursor.execute(exec_message)
         
 
-    def get(self, project_id: int) -> Project:
+    def get(self, project_id: int) -> ProjectEntity:
         self._cursor.execute(
             """SELECT * FROM Projects
 WHERE id=?""", (str(project_id))
@@ -65,7 +65,7 @@ WHERE id=?""", (str(project_id))
         project = self._cursor.fetchone()
         return project
 
-    def list_projects(self) -> List[Project]:
+    def list_projects(self) -> List[ProjectEntity]:
         self._cursor.execute(
             """SELECT * FROM Projects""")
         projects = self._cursor.fetchall()

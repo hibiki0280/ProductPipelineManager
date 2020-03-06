@@ -1,7 +1,7 @@
 import pytest
 
 import projects
-from projects import Project
+from projects import ProjectEntity
 
 
 @pytest.fixture(autouse=True)
@@ -15,9 +15,9 @@ def initialized_database(tmpdir):
 @pytest.fixture()
 def setup_few_projects():
     return (
-        Project("Capture Animals", "try to capture rare animals", "Jhonson"),
-        Project("PUBG", "pvp shooting game in which up 100 players fight in a battle royale","Player Unknown"),
-        Project("MineCraft","3d sandbox game which is one of the most popular game in the world", )
+        ProjectEntity("Capture Animals", "try to capture rare animals", "Jhonson"),
+        ProjectEntity("PUBG", "pvp shooting game in which up 100 players fight in a battle royale","Player Unknown"),
+        ProjectEntity("MineCraft","3d sandbox game which is one of the most popular game in the world", )
     )
 
 @pytest.fixture

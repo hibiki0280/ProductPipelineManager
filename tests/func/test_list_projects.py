@@ -1,13 +1,13 @@
 import pytest
 
 import projects
-from projects import Project
+from projects import ProjectEntity
 
 def test_list_projects_returns_valid_projects(db_with_3_projects):
     list_projects = projects.list_projects()
     assert isinstance(list_projects, list)
     for prj in list_projects:
-        assert isinstance(prj, Project)
+        assert isinstance(prj, ProjectEntity)
 
 def test_list_projects_has_unique_ids(db_with_3_projects):
     list_projects = projects.list_projects()

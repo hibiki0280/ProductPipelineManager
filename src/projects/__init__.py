@@ -1,6 +1,8 @@
 from .api import (
-    Project,
-    ProjectException,
+    ProjectEntity,
+    ProjectEntityException,
+    AssetEntity,
+    AssetEntityException,
     add,
     get,
     list_projects,
