@@ -1,6 +1,7 @@
 from .api import (
     Project,
     ProjectException,
+    ProjectItem,
     Asset,
     AssetException,
     Shot,
@@ -8,6 +9,7 @@ from .api import (
     add_to_project,
     add,
     get,
+    list_items,
     list_all,
     count,
     update,

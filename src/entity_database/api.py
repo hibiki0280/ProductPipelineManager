@@ -25,9 +25,9 @@ class _Base(object):
             raise ValueError('%s.author must be string or None' % self.__class__.__name__)
         
         self.name = Field(name)
-        if description:
+        if description is not None:
             self.description = Field(description)
-        if author:
+        if author is not None:
             self.author = Field(author)
         self.id = Field(id)
 
@@ -70,6 +70,16 @@ class _Base(object):
 
 class Project(_Base):
     label = "Project"
+    def __init__(self, *args, **kwargs):        
+        super().__init__(*args, **kwargs)
+        
+        if "project_root" in kwargs:
+            self._set_path(kwargs["project_root"])
+
+    def _set_path(self, project_root: str):
+        if not isinstance(project_root, str):
+            raise ValueError('%s.project_root must be string' % self.__class__.__name__)
+        self.project_root = Field(project_root)
     
 class ProjectItem(_Base):
     label = "ProjectItem"
@@ -96,6 +106,9 @@ class Shot(ProjectItem):
 class ProjectException(Exception):
     pass
 
+class ProjecItemException(Exception):
+    pass
+
 class AssetException(Exception):
     pass
 
@@ -110,11 +123,16 @@ def add_to_project(entity, project_id: str) -> str:
     if not issubclass(type(entity), ProjectItem):
         raise TypeError('entity must be Asset or Shot Object')
     if hasattr(entity, "project_id") and entity.project_id is not None:
-        raise ValueError('entity.project_id must None')
+        raise ValueError('entity.project_id already set but must None')
     if not isinstance(project_id, str):
         raise TypeError('project_id must be string')
 
+    project = get(project_id)
+    if not isinstance(project, Project):
+        raise ProjecItemException("project_id is invalid, couldn't get project")
+    
     entity._set_project(project_id)
+
     return add(entity)
 
 def add(entity) -> str:
@@ -127,20 +145,29 @@ def add(entity) -> str:
 
     check_database_status()
     
-    project_id = _projectsdb.add(entity._serialize_data())
+    project_id = _db.add(entity._serialize_data())
     return project_id
 
 def get(id: str) -> Project:
     if not isinstance(id, str):
-        raise TypeError('project_id must be string')
+        raise TypeError('id must be string')
     check_database_status()
-    entity_type, project_dict = _projectsdb.get(id)
+    entity_type, project_dict = _db.get(id)
     return globals()[entity_type](**project_dict)
+
+def list_items(project_id, entity_type):
+    if not isinstance(project_id, str):
+        raise TypeError('project_id must be string')
+    if not isinstance(entity_type, str):
+        raise TypeError('entity_type must be string')
+    check_database_status()
+    entities = _db.list_items(project_id, entity_type)
+    return [ globals()[entity_type](**entity) for entity in entities ]
         
 def list_all():
     check_database_status()
     entities = []
-    for entity_type, entity_dict in _projectsdb.list_all():
+    for entity_type, entity_dict in _db.list_all():
         entities.append(globals()[entity_type](**entity_dict))
         
     return entities
@@ -148,7 +175,7 @@ def list_all():
 
 def count() -> int :
     check_database_status()
-    return _projectsdb.count()
+    return _db.count()
 
 def update(id: str, entity: Project) -> None:
     if not isinstance(id, str):
@@ -158,36 +185,36 @@ def update(id: str, entity: Project) -> None:
     check_database_status()
 
     updates = entity._serialize_data()
-    _projectsdb.update(id, updates)
+    _db.update(id, updates)
 
 def delete(id: str) -> None:
     if not isinstance(id, str):
         raise TypeError('project_id must be string')
     check_database_status()
-    _projectsdb.delete(id)
+    _db.delete(id)
 
 def delete_all() -> None:
     check_database_status()
-    _projectsdb.delete_all()
+    _db.delete_all()
 
 # def unique_id() -> int:
 #     pass
 
-_projectsdb = None
+_db = None
 
 def check_database_status() -> None:
-    if _projectsdb is None:
+    if _db is None:
         raise UninitializedDatabase()
     
 def start_database(db_path: string_types):
     if not isinstance(db_path, string_types):
         raise TypeError('db_path must be a string')
-    global _projectsdb
-    from projects import projects_sqlitedb
-    _projectsdb = projects_sqlitedb.start_database(db_path)
+    global _db
+    from entity_database import sqlite_db
+    _db = sqlite_db.start_database(db_path)
 
 def stop_database():
-    global _projectsdb
-    _projectsdb.stop_database()
-    _projectsdb = None
+    global _db
+    _db.stop_database()
+    _db = None
 

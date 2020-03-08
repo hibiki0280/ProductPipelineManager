@@ -1,5 +1,5 @@
 import pytest
-from projects import Project, Asset, Shot
+from entity_database import Project, Asset, Shot
 
 @pytest.mark.parametrize("entity, expected",[
     (Project("test_project", "This is a test project.", id=12),

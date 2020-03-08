@@ -5,7 +5,7 @@ from uuid import UUID
 from six import string_types
 from typing import List
 
-from projects import Project
+from entity_database import Project
 
 
 def dict_factory(cursor, row):
@@ -17,7 +17,7 @@ def dict_factory(cursor, row):
 
 class EntitiesDB(object):
     def __init__(self, db_path):
-        self._conn = sqlite3.connect(os.path.join(db_path, 'projects.db'))
+        self._conn = sqlite3.connect(os.path.join(db_path, 'entity_database.db'))
         self._conn.row_factory = dict_factory
         self._cursor = self._conn.cursor()
         self._conn.commit()
@@ -36,9 +36,12 @@ class EntitiesDB(object):
         
         return entity["id"]
 
+    def list_tables(self):
+        self._cursor.execute("select name from sqlite_master where type='table'")
+        return [table["name"] for table in self._cursor.fetchall()]
+
     def tablename(self, entity) -> str:
         return entity["entitiy_type"]
-
         
     def initialize_entity_table_if_not(self, entity):
         if not self._tables.get(self.tablename(entity)):
@@ -69,7 +72,7 @@ class EntitiesDB(object):
         
 
     def get(self, entity_id: str):
-        for table in self._tables.keys():
+        for table in self.list_tables():
             self._cursor.execute(
                 """SELECT * FROM %s
 WHERE id=?""" % table, (entity_id,)
@@ -81,10 +84,15 @@ WHERE id=?""" % table, (entity_id,)
                 return table, entity
         else:
             return None
-
+    
+    def list_items(self, project_id: str, entity_type: str):
+        self._cursor.execute(
+            """SELECT * FROM %s WHERE project_id=?""" % entity_type, (project_id,))
+        return self._cursor.fetchall()
+        
     def list_all(self) -> List[Project]:
         entities = []
-        for table in self._tables.keys():
+        for table in self.list_tables():
             self._cursor.execute(
                 """SELECT * FROM %s""" % table)
             entities += [ (table, entity) for entity in self._cursor.fetchall()]
@@ -104,12 +112,12 @@ WHERE id=?""" % table, (entity_id,)
         
 
     def delete(self, project_id):
-        for table in self._tables.keys():
+        for table in self.list_tables():
             self._cursor.execute("DELETE FROM %s where id=?" % table, [project_id])
         self._conn.commit()
 
     def delete_all(self):
-        for table in self._tables.keys():
+        for table in self.list_tables():
             self._cursor.execute("DELETE FROM %s" % table)
         self._conn.commit()
 

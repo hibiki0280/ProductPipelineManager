@@ -1,16 +1,16 @@
 import pytest
 
-import projects
-from projects import Project, Asset
+import entity_database
+from entity_database import Project, Asset, Shot
 
 
 @pytest.fixture(autouse=True)
 def initialized_database(tmpdir):
-    projects.start_database(str(tmpdir))
+    entity_database.start_database(str(tmpdir))
 
     yield
 
-    projects.stop_database()
+    entity_database.stop_database()
 
 @pytest.fixture()
 def single_project():
@@ -31,11 +31,11 @@ def setup_few_projects():
 @pytest.fixture
 def db_with_3_projects(setup_few_projects):
     for prj in setup_few_projects:
-        projects.add(prj)
+        entity_database.add(prj)
     return setup_few_projects
 
 @pytest.fixture()
-def setup_few_assets():
+def setup_few_assets_and_shots():
     return (
         Asset("CharacterA"),
         Asset("CharacterB"),
@@ -46,11 +46,16 @@ def setup_few_assets():
         Asset("EnvironmentG"),
         Asset("EnvironmentH"),
         Asset("EnvironmentQ"),
+        Shot("S1C010"),
+        Shot("S1C020"),
+        Shot("S1C030"),
     )
 
 @pytest.fixture
-def db_with_1_prj_9_asset(single_project, setup_few_assets):
-    prj_id = projects.add(single_project)
-    for asset in setup_few_assets:
-        projects.add_to_project(asset, prj_id)
+def db_with_1_prj_and_some_items(single_project, setup_few_assets_and_shots):
+    prj_id = entity_database.add(single_project)
+    for asset in setup_few_assets_and_shots:
+        entity_database.add_to_project(asset, prj_id)
+
+    return prj_id
     
